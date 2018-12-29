@@ -14,6 +14,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.subu.stjosephs.tollpay.common_variables.Common;
 
 public class SignUpActivity extends AppCompatActivity {
 
@@ -33,6 +34,16 @@ public class SignUpActivity extends AppCompatActivity {
 
         mAuth = FirebaseAuth.getInstance();
 
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if(Common.current_user!=null)
+        {
+            finish();
+            startActivity(new Intent(SignUpActivity.this,HomeActivitty.class));
+        }
     }
 
     public void sign_up_user(View view)

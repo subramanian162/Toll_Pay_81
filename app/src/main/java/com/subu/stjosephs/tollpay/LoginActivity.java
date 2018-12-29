@@ -13,6 +13,8 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.subu.stjosephs.tollpay.common_variables.Common;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -20,7 +22,7 @@ public class LoginActivity extends AppCompatActivity {
     public String s_email,s_password;
     public FirebaseAuth mAuth;
     private ProgressBar sign_in_progress;
-
+    public FirebaseUser user;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,8 +33,18 @@ public class LoginActivity extends AppCompatActivity {
         sign_in_progress = (ProgressBar)findViewById(R.id.sign_in_progress_bar_id);
 
         mAuth = FirebaseAuth.getInstance();
+        user = mAuth.getCurrentUser();
+        Common.current_user = user;
+    }
 
-
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if(Common.current_user!=null)
+        {
+            finish();
+            startActivity(new Intent(LoginActivity.this,HomeActivitty.class));
+        }
     }
 
     public void sign_in_user(View view)

@@ -14,6 +14,8 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.subu.stjosephs.tollpay.adapters.CustomClientAdapter;
+import com.subu.stjosephs.tollpay.adapters.CustomUserAdapter;
+import com.subu.stjosephs.tollpay.common_variables.Common;
 
 import java.util.Arrays;
 import java.util.List;
@@ -29,23 +31,48 @@ public class HomeActivitty extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_client_home);
 
-        //list view display the names inthe list view
-
-        list = Arrays.asList(names);
-        home_list = (ListView)findViewById(R.id.client_home_list_view);
-        if(!list.isEmpty())
+        if(Common.user_type.equals("client"))
         {
-         //   CustomUserAdapter customArrayAdapter = new CustomUserAdapter(HomeActivitty.this,names);
-            CustomClientAdapter customClientAdapter = new CustomClientAdapter(HomeActivitty.this,list);
+            setContentView(R.layout.activity_client_home);
 
-            //ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(getApplicationContext(),android.R.layout.simple_list_item_1,list);
-            home_list.setAdapter(customClientAdapter);
+            //list view display the names inthe list view
+
+            list = Arrays.asList(names);
+            home_list = (ListView)findViewById(R.id.client_home_list_view);
+            if(!list.isEmpty())
+            {
+                //   CustomUserAdapter customArrayAdapter = new CustomUserAdapter(HomeActivitty.this,names);
+                CustomClientAdapter customClientAdapter = new CustomClientAdapter(HomeActivitty.this,list);
+
+                //ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(getApplicationContext(),android.R.layout.simple_list_item_1,list);
+                home_list.setAdapter(customClientAdapter);
+            }
+            else
+            {
+                Toast.makeText(getApplicationContext(), "check the array", Toast.LENGTH_SHORT).show();
+            }
+
         }
-        else
+        else if(Common.user_type.equals("user"))
         {
-            Toast.makeText(getApplicationContext(), "check the array", Toast.LENGTH_SHORT).show();
+            setContentView(R.layout.activity_home);
+
+            list = Arrays.asList(names);
+            home_list = (ListView)findViewById(R.id.home_list_view);
+            if(!list.isEmpty())
+            {
+                  CustomUserAdapter customUserAdapter = new CustomUserAdapter(HomeActivitty.this,names);
+               // CustomClientAdapter customClientAdapter = new CustomClientAdapter(HomeActivitty.this,list);
+
+                //ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(getApplicationContext(),android.R.layout.simple_list_item_1,list);
+                home_list.setAdapter(customUserAdapter);
+            }
+            else
+            {
+                Toast.makeText(getApplicationContext(), "check the array", Toast.LENGTH_SHORT).show();
+            }
+
         }
 
 
@@ -64,6 +91,16 @@ public class HomeActivitty extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if(Common.current_user==null)
+        {
+            finish();
+            startActivity(new Intent(HomeActivitty.this,LoginActivity.class));
+        }
     }
 
     @Override
