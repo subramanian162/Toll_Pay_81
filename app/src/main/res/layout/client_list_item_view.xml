@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_height="match_parent">
+        <TextView
+            android:id="@+id/client_list_serial_number"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="1"
+            android:textSize="19sp"
+            android:textColor="#e7d54a"
+            android:gravity="center"/>
+        <TextView
+            android:id="@+id/client_list_vehicle_number"
+            android:layout_width="0dp"
+            android:layout_weight="6"
+            android:text="TN986N76"
+            android:textSize="19sp"
+            android:gravity="center"
+            android:textColor="#ffff"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/client_list_amount"
+            android:layout_width="0dp"
+            android:layout_weight="2"
+            android:textSize="19sp"
+            android:textColor="#3ef700"
+            android:gravity="center"
+            android:layout_height="wrap_content"
+            android:text="+233"/>
+    </LinearLayout>
+
+</RelativeLayout>

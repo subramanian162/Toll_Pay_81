@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:gravity="center"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:id="@+id/line1"
+        android:layout_width="match_parent"
+        android:orientation="vertical"
+        android:layout_margin="31dp"
+        android:padding="6dp"
+        android:background="@drawable/background_white"
+        android:layout_height="251dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:textSize="18sp"
+            android:layout_marginTop="44dp"
+            android:gravity="center"
+            android:textStyle="bold"
+            android:text="Your Transaction Amount of Rs,1244 was added Sucessfully"
+            android:layout_height="wrap_content" />
+
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="14dp"
+            android:layout_marginTop="12dp"
+
+            android:textStyle="bold"
+            android:text="Thanks for your Support and Enjoy your journey"
+            android:gravity="center"/>
+
+        <info.hoang8f.widget.FButton
+            android:id="@+id/ok"
+            android:onClick="payAmount"
+            android:layout_marginTop="18dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="ok"
+            android:layout_marginStart="2dp"
+            android:layout_marginEnd="2dp"
+            android:gravity="center"
+            android:textColor="@android:color/white"
+            android:textSize="15sp"
+            android:textAppearance="@style/Animation.AppCompat.Dialog"
+            />
+    </LinearLayout>
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="5dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="138dp"
+        android:layout_marginEnd="138dp"
+        android:layout_centerVertical="true"
+        android:layout_centerInParent="true"
+        android:background="@drawable/sucess_bacground"
+        android:src="@drawable/ic_ok_paid" />
+
+
+</RelativeLayout>

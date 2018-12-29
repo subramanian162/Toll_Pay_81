@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#3b6cff"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context=".FormActivity"
+    tools:showIn="@layout/app_bar_form">
+    <LinearLayout
+        android:background="#3b6cff"
+        android:layout_width="match_parent"
+        android:orientation="vertical"
+        android:padding="12dp"
+        android:layout_height="match_parent">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:background="@drawable/form_background"
+            android:orientation="vertical"
+            android:padding="2dp"
+            android:layout_weight="1">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_margin="4dp"
+                android:text="Vehicle Entry"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="10"
+            android:background="@drawable/form_background"
+            android:orientation="vertical"
+            android:padding="15dp">
+
+            <EditText
+                android:id="@+id/form_full_name_id"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_marginBottom="9dp"
+                android:layout_weight="2"
+                android:drawableStart="@drawable/ic_form_name"
+                android:drawablePadding="20dp"
+                android:hint="Full Name"
+                android:padding="2dp"
+                android:textColor="#050505"
+                android:textColorHint="#050505" />
+
+            <EditText
+                android:id="@+id/form_vehicle_id"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_marginBottom="9dp"
+                android:layout_weight="2"
+                android:drawableStart="@drawable/ic_form_vehicle_number"
+                android:drawablePadding="20dp"
+                android:hint="Vehicle Number"
+                android:padding="2dp"
+                android:textColor="#050505"
+                android:textColorHint="#050505" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_marginBottom="9dp"
+                android:layout_weight="0.7"
+                android:drawableStart="@drawable/ic_form_vehicle_type"
+                android:drawablePadding="20dp"
+                android:text="Vehicle Type"
+                android:gravity="center_vertical"
+                android:textSize="18dp"
+                android:paddingTop="2dp"
+                android:textColor="#050505"
+                android:textColorHint="#050505" />
+
+            <Spinner
+                android:id="@+id/form_vehicle_type_spinner_id"
+                android:layout_width="match_parent"
+                android:background="@drawable/form_spinner_background"
+                android:layout_height="0dp"
+                android:layout_marginStart="46dp"
+                android:layout_weight="1"
+                >
+
+            </Spinner>
+
+
+            <EditText
+                android:id="@+id/form_phone_id"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_marginBottom="9dp"
+                android:layout_weight="2"
+                android:drawableStart="@drawable/ic_form_phone"
+                android:drawablePadding="20dp"
+                android:hint="Phone Number"
+                android:padding="2dp"
+                android:textColor="#050505"
+                android:textColorHint="#050505" />
+
+            <EditText
+                android:id="@+id/form_amount_id"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_marginBottom="9dp"
+                android:layout_weight="2"
+                android:drawableStart="@drawable/ic_form_amount"
+                android:drawablePadding="20dp"
+                android:hint="Amount"
+                android:padding="2dp"
+                android:textColor="#050505"
+                android:textColorHint="#050505" />
+
+
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:orientation="vertical"
+            android:layout_height="0dp"
+            android:layout_weight="2"
+            android:background="@drawable/form_background"
+            android:padding="2dp">
+
+            <info.hoang8f.widget.FButton
+                android:id="@+id/pay_btn"
+                android:onClick="payAmount"
+                android:layout_margin="16dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="pay"
+                android:gravity="center"
+                app:buttonColor="#3b6cff"
+                android:textColor="@android:color/white"
+                android:textSize="24sp"
+                android:textAppearance="@style/Animation.AppCompat.Dialog"
+                />
+
+        </LinearLayout>
+    </LinearLayout>
+    <ProgressBar
+        android:id="@+id/form_progress_bar_id"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"/>
+
+
+</RelativeLayout>
