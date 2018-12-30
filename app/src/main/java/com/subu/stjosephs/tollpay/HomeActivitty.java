@@ -94,16 +94,6 @@ public class HomeActivitty extends AppCompatActivity
     }
 
     @Override
-    protected void onStart() {
-        super.onStart();
-        if(Common.current_user==null)
-        {
-            finish();
-            startActivity(new Intent(HomeActivitty.this,LoginActivity.class));
-        }
-    }
-
-    @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {

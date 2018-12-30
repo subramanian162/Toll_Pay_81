@@ -14,7 +14,7 @@ import com.subu.stjosephs.tollpay.R;
 
 import java.util.List;
 
-public class CustomClientAdapter extends ArrayAdapter {
+public class CustomClientAdapter extends ArrayAdapter{
 
    private List client_details;
    private Activity context;
