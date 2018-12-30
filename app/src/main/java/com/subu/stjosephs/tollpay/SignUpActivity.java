@@ -9,19 +9,25 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
-
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.FirebaseDatabase;
+import com.subu.stjosephs.tollpay.Objects.User;
 import com.subu.stjosephs.tollpay.common_variables.Common;
 
 public class SignUpActivity extends AppCompatActivity {
 
-    private EditText email,password;
-    public String s_email,s_password;
-    public FirebaseAuth mAuth;
+    private EditText email;
+    private EditText new_password;
+    private EditText confirm_password;
+    private String s_email;
+    private String s_password;
+    private String c_password;
+    private FirebaseAuth mAuth;
     private ProgressBar sign_up_progress;
+    private User update_user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,7 +35,8 @@ public class SignUpActivity extends AppCompatActivity {
         setContentView(R.layout.activity_sign_up);
 
         email = (EditText)findViewById(R.id.sign_up_email_id);
-        password = (EditText)findViewById(R.id.sign_up_password_id);
+        new_password = (EditText)findViewById(R.id.sign_up_password_id);
+        confirm_password = (EditText)findViewById(R.id.confirm_password_id);
         sign_up_progress = (ProgressBar)findViewById(R.id.sign_up_progress_bar_id);
 
         mAuth = FirebaseAuth.getInstance();
@@ -39,7 +46,7 @@ public class SignUpActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        if(Common.current_user!=null)
+        if(mAuth.getCurrentUser()!=null)
         {
             finish();
             startActivity(new Intent(SignUpActivity.this,HomeActivitty.class));
@@ -48,8 +55,9 @@ public class SignUpActivity extends AppCompatActivity {
 
     public void sign_up_user(View view)
     {
-        s_email = email.getText().toString();
-        s_password = password.getText().toString();
+        s_email = email.getText().toString().trim();
+        s_password = new_password.getText().toString().trim();
+        c_password = confirm_password.getText().toString().trim();
 
         if(s_email.isEmpty())
         {
@@ -65,14 +73,22 @@ public class SignUpActivity extends AppCompatActivity {
         }
         if(s_password.isEmpty())
         {
-            password.setError("Password is required.");
-            password.requestFocus();
+            new_password.setError("Password is required.");
+            new_password.requestFocus();
             return;
         }
         if(s_password.length() < 6)
         {
-            password.setError("Minimum length of the password is 6");
-            password.requestFocus();
+            new_password.setError("Minimum length of the password is 6");
+            new_password.requestFocus();
+            return;
+        }
+        if(!s_password.equals(c_password))
+        {
+            confirm_password.setError("Check the passwords");
+            new_password.setError("Check the passwords");
+            confirm_password.requestFocus();
+            new_password.requestFocus();
             return;
         }
 
@@ -81,14 +97,54 @@ public class SignUpActivity extends AppCompatActivity {
         mAuth.createUserWithEmailAndPassword(s_email,s_password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
-                sign_up_progress.setVisibility(View.GONE);
+
                 if(task.isSuccessful())
                 {
-                    finish();
-                    Intent intent = new Intent(SignUpActivity.this,HomeActivitty.class);
-                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    Toast.makeText(getApplicationContext(),"Account created sucessfully",Toast.LENGTH_SHORT).show();
-                    startActivity(intent);
+                    update_user  = new User(s_email);
+                    if(Common.user_type.equals("client"))
+                    {
+                        FirebaseDatabase.getInstance().getReference("Clients")
+                                .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                                .setValue(update_user).addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                sign_up_progress.setVisibility(View.GONE);
+                                if (task.isSuccessful()) {
+                                    Toast.makeText(SignUpActivity.this, "Account added sucessfully", Toast.LENGTH_LONG).show();
+                                    finish();
+                                    Intent intent = new Intent(SignUpActivity.this,HomeActivitty.class);
+                                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                    startActivity(intent);
+                                } else {
+                                    //display a failure message
+                                    Toast.makeText(SignUpActivity.this, task.getException().toString(), Toast.LENGTH_LONG).show();
+                                }
+                            }
+                        });
+
+                    }
+                    else if(Common.user_type.equals("user"))
+                    {
+                        FirebaseDatabase.getInstance().getReference("Users")
+                                .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                                .setValue(update_user).addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                sign_up_progress.setVisibility(View.GONE);
+                                if (task.isSuccessful()) {
+                                    Toast.makeText(SignUpActivity.this, "Account added sucessfully", Toast.LENGTH_LONG).show();
+                                    finish();
+                                    Intent intent = new Intent(SignUpActivity.this,HomeActivitty.class);
+                                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                    startActivity(intent);
+                                } else {
+                                    //display a failure message
+                                    Toast.makeText(SignUpActivity.this, task.getException().toString(), Toast.LENGTH_LONG).show();
+                                }
+                            }
+                        });
+
+                    }
                 }
                 else
                 {
@@ -100,6 +156,7 @@ public class SignUpActivity extends AppCompatActivity {
 
     public void sign_in_activity(View view)
     {
+        finish();
         startActivity(new Intent(SignUpActivity.this,LoginActivity.class));
     }
 }
