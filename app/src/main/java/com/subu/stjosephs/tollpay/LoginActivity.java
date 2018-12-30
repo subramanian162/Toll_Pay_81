@@ -35,7 +35,6 @@ public class LoginActivity extends AppCompatActivity {
     private ProgressBar sign_in_progress;
     public FirebaseUser user;
     private DatabaseReference myRef;
-    private List<User> users_email_list;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,8 +47,6 @@ public class LoginActivity extends AppCompatActivity {
 
         mAuth = FirebaseAuth.getInstance();
         user = mAuth.getCurrentUser();
-        Common.current_user = user;
-        users_email_list = new ArrayList<>();
     }
 
     @Override

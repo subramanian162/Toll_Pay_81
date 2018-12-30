@@ -13,6 +13,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.subu.stjosephs.tollpay.adapters.CustomClientAdapter;
 import com.subu.stjosephs.tollpay.adapters.CustomUserAdapter;
 import com.subu.stjosephs.tollpay.common_variables.Common;
@@ -23,6 +24,7 @@ import java.util.List;
 public class HomeActivitty extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    private FirebaseAuth mAuth;
     private ListView home_list;
     private List<String> list;
     private String names[] = {"subramanian","suresh","dinesh","ramesh","subramanian","suresh","dinesh","ramesh","subramanian","suresh","dinesh","ramesh","subramanian","suresh","dinesh","ramesh",
@@ -32,6 +34,7 @@ public class HomeActivitty extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        mAuth = FirebaseAuth.getInstance();
         if(Common.user_type.equals("client"))
         {
             setContentView(R.layout.activity_client_home);
@@ -103,6 +106,15 @@ public class HomeActivitty extends AppCompatActivity
         }
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if(mAuth.getCurrentUser()==null)
+        {
+            finish();
+            startActivity(new Intent(HomeActivitty.this,LoginActivity.class));
+        }
+    }
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override

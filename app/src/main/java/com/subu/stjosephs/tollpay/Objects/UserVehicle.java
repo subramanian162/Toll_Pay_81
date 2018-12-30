@@ -5,15 +5,15 @@ public class UserVehicle {
     private String u_name;
     private String u_vehicle_number;
     private String u_vehicle_type;
-    private int u_phone_number;
-    private int u_amount;
+    private String u_phone_number;
+    private String u_amount;
 
     public UserVehicle()
     {
 
     }
 
-    public UserVehicle(String u_name, String u_vehicle_number, String u_vehicle_type, int u_phone_number, int u_amount) {
+    public UserVehicle(String u_name, String u_vehicle_number, String u_vehicle_type, String u_phone_number, String u_amount) {
         this.u_name = u_name;
         this.u_vehicle_number = u_vehicle_number;
         this.u_vehicle_type = u_vehicle_type;
@@ -45,19 +45,19 @@ public class UserVehicle {
         this.u_vehicle_type = u_vehicle_type;
     }
 
-    public int getU_phone_number() {
+    public String getU_phone_number() {
         return u_phone_number;
     }
 
-    public void setU_phone_number(int u_phone_number) {
+    public void setU_phone_number(String u_phone_number) {
         this.u_phone_number = u_phone_number;
     }
 
-    public int getU_amount() {
+    public String getU_amount() {
         return u_amount;
     }
 
-    public void setU_amount(int u_amount) {
+    public void setU_amount(String u_amount) {
         this.u_amount = u_amount;
     }
 }
