@@ -192,7 +192,7 @@ public class LoginActivity extends AppCompatActivity {
                     if(user_mail.getEmail_id().equals(null))
                     {
                         cross_check = 2;
-                                sign_in_progress.setVisibility(View.GONE);
+                        sign_in_progress.setVisibility(View.GONE);
                         Toast.makeText(getApplicationContext(),"The user branch has no users",Toast.LENGTH_SHORT).show();
                         break;
                     }

@@ -10,16 +10,17 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
+import com.subu.stjosephs.tollpay.Objects.Vehicles_Entry;
 import com.subu.stjosephs.tollpay.R;
 
 import java.util.List;
 
-public class CustomClientAdapter extends ArrayAdapter{
+public class CustomClientAdapter extends ArrayAdapter<Vehicles_Entry>{
 
-   private List client_details;
+   private List<Vehicles_Entry> client_details;
    private Activity context;
 
-    public CustomClientAdapter(Activity context1, List names) {
+    public CustomClientAdapter(Activity context1, List<Vehicles_Entry> names) {
         super(context1,R.layout.client_list_item_view,names);
         this.context = context1;
         this.client_details = names;
@@ -28,10 +29,14 @@ public class CustomClientAdapter extends ArrayAdapter{
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+
         LayoutInflater layoutInflater = context.getLayoutInflater();
         View client_view = layoutInflater.inflate(R.layout.client_list_item_view,null,true);
+
         TextView vehicle_number = (TextView) client_view.findViewById(R.id.client_list_vehicle_number);
-        vehicle_number.setText(client_details.get(position).toString());
+
+        vehicle_number.setText(client_details.get(position).getVehicle_number());
+
         return client_view;
     }
 }

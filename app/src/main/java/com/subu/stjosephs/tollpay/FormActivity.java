@@ -24,8 +24,10 @@ import android.widget.Toast;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.subu.stjosephs.tollpay.Objects.UserVehicle;
+import com.subu.stjosephs.tollpay.Objects.Vehicles_Entry;
 
 import java.util.Arrays;
 
@@ -41,6 +43,7 @@ public class FormActivity extends AppCompatActivity implements NavigationView.On
     String form_vehicle_type;
     String form_phone_number;
     String form_amount;
+    String key;
     private String vehicle_type[] = {"Van","Car","Auto","Lorry"};
     Dialog dialog;
     private Button ok_btn;
@@ -94,8 +97,23 @@ public class FormActivity extends AppCompatActivity implements NavigationView.On
     }
 
 
+    public void pay()
+    {
+     FirebaseDatabase.getInstance().getReference()
+     .child("Vehicles_Number")
+     .push().setValue(editText_vehicle_number.getText().toString());
+    }
+    public void vehicleEntry()
+    {
+        Vehicles_Entry vehicles_entry = new Vehicles_Entry(FirebaseAuth.getInstance().getCurrentUser().getUid(),
+                form_vehicle_number,key);
+        FirebaseDatabase.getInstance().getReference()
+                .child("Vehicles_Entry")
+                .push().setValue(vehicles_entry);
+    }
     public void payAmount(View view)
     {
+        pay();
         //Here we get the form details and wrap it in a single userVehicle object
 
         form_name = editText_name.getText().toString();
@@ -106,9 +124,14 @@ public class FormActivity extends AppCompatActivity implements NavigationView.On
 
         //Here we sent those wrapping userVehicle object in to firebase database under the User_Vehicles path.
 
-        FirebaseDatabase.getInstance().getReference("User_Vehicles")
-                .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
-                .push().setValue(userVehicle).addOnCompleteListener(new OnCompleteListener<Void>() {
+        DatabaseReference mRef =  FirebaseDatabase.getInstance().getReference()
+                .child("User_Vehicles")
+                .child(FirebaseAuth.getInstance().getCurrentUser().getUid());
+        key = mRef.push().getKey();
+
+        vehicleEntry();
+
+        mRef.child(key).setValue(userVehicle).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 if(task.isSuccessful()) {
