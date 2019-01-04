@@ -28,7 +28,7 @@
             android:id="@+id/client_total_amount"
             android:layout_width="0dp"
             android:layout_weight="1"
-            android:text="Rs,3992 /-"
+            android:text="Rs,0 /-"
             android:gravity="center"
             android:textSize="21sp"
             android:textColor="#560c10"

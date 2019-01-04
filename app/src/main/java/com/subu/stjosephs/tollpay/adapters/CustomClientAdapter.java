@@ -13,6 +13,7 @@ import android.widget.TextView;
 import com.subu.stjosephs.tollpay.Objects.CrossedVehicle;
 import com.subu.stjosephs.tollpay.Objects.Vehicles_Entry;
 import com.subu.stjosephs.tollpay.R;
+import com.subu.stjosephs.tollpay.common_variables.Common;
 
 import java.util.List;
 
@@ -21,7 +22,7 @@ public class CustomClientAdapter extends ArrayAdapter<CrossedVehicle>{
    private List<CrossedVehicle> vehicle_details;
    private Activity context;
 
-    public CustomClientAdapter(Activity context1, List<CrossedVehicle> crossedVehicles) {
+   public CustomClientAdapter(Activity context1, List<CrossedVehicle> crossedVehicles) {
         super(context1,R.layout.client_list_item_view,crossedVehicles);
         this.context = context1;
         this.vehicle_details = crossedVehicles;
@@ -30,7 +31,6 @@ public class CustomClientAdapter extends ArrayAdapter<CrossedVehicle>{
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-
         LayoutInflater layoutInflater = context.getLayoutInflater();
         View client_view = layoutInflater.inflate(R.layout.client_list_item_view,null,true);
 

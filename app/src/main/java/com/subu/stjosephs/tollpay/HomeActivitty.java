@@ -12,6 +12,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -41,6 +42,7 @@ public class HomeActivitty extends AppCompatActivity
     List<UserVehicle> user_Vehicle_List;
     List<CrossedVehicle> client_list;
     String last_crossed_vehicle_from_toll;
+    TextView client_amount_view;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +62,7 @@ public class HomeActivitty extends AppCompatActivity
             setContentView(R.layout.activity_client_home);
             client_list = new ArrayList<>();
             home_list = findViewById(R.id.client_home_list_view);
+            client_amount_view = findViewById(R.id.client_total_amount);
         }
 
         //here we end the list view code snippeds
@@ -183,6 +186,7 @@ public class HomeActivitty extends AppCompatActivity
                                                                             CrossedVehicle crossedVehicle = new CrossedVehicle(matched_user_Vehicle.getU_vehicle_number(),
                                                                                     Integer.toString(200));
                                                                             mRef.child("Crossed_Vehicles").push().setValue(crossedVehicle);
+                                                                            display_client_list_items();
                                                                             break;
                                                                         }
                                                                         case "Auto": {
@@ -196,6 +200,7 @@ public class HomeActivitty extends AppCompatActivity
                                                                             CrossedVehicle crossedVehicle = new CrossedVehicle(matched_user_Vehicle.getU_vehicle_number(),
                                                                                     Integer.toString(200));
                                                                             mRef.child("Crossed_Vehicles").push().setValue(crossedVehicle);
+                                                                            display_client_list_items();
                                                                             break;
                                                                         }
                                                                         case "Lorry": {
@@ -209,6 +214,7 @@ public class HomeActivitty extends AppCompatActivity
                                                                             CrossedVehicle crossedVehicle = new CrossedVehicle(matched_user_Vehicle.getU_vehicle_number(),
                                                                                     Integer.toString(200));
                                                                             mRef.child("Crossed_Vehicles").push().setValue(crossedVehicle);
+                                                                            display_client_list_items();
                                                                             break;
                                                                         }
                                                                     }
@@ -259,10 +265,13 @@ public class HomeActivitty extends AppCompatActivity
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
+                int amount=0;
                 client_list.clear();
                 for(DataSnapshot snapshot : dataSnapshot.getChildren())
                 {
                     CrossedVehicle crossedVehicle = snapshot.getValue(CrossedVehicle.class);
+                    amount = amount + Integer.parseInt(crossedVehicle.getGetCrossed_vehicle_amount());
+                    client_amount_view.setText("RS,"+Integer.toString(amount)+"/-");
                     client_list.add(crossedVehicle);
                 }
                 CustomClientAdapter customClientAdapter = new CustomClientAdapter(HomeActivitty.this,client_list);
