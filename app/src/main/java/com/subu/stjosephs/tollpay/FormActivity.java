@@ -28,6 +28,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.subu.stjosephs.tollpay.Objects.UserVehicle;
 import com.subu.stjosephs.tollpay.Objects.Vehicles_Entry;
+import com.subu.stjosephs.tollpay.common_variables.Common;
 
 import java.util.Arrays;
 
@@ -113,47 +114,62 @@ public class FormActivity extends AppCompatActivity implements NavigationView.On
     }
     public void payAmount(View view)
     {
-        pay();
-        //Here we get the form details and wrap it in a single userVehicle object
+        if(Common.user_type.equals("user"))
+        {
 
-        form_name = editText_name.getText().toString();
-        form_vehicle_number = editText_vehicle_number.getText().toString();
-        form_phone_number = editText_phone_number.getText().toString();
-        form_amount = editText_amount.getText().toString();
-        userVehicle = new UserVehicle(form_name,form_vehicle_number,form_vehicle_type,form_phone_number,form_amount);
+            //Here we get the form details and wrap it in a single userVehicle object
 
-        //Here we sent those wrapping userVehicle object in to firebase database under the User_Vehicles path.
+            form_name = editText_name.getText().toString();
+            form_vehicle_number = editText_vehicle_number.getText().toString();
+            form_phone_number = editText_phone_number.getText().toString();
+            form_amount = editText_amount.getText().toString();
+            if(!form_name.equals("") && !form_vehicle_number.equals("") && !form_phone_number.equals("") && !form_amount.equals(""))
+            {
+                pay();
+                userVehicle = new UserVehicle(form_name,form_vehicle_number,form_vehicle_type,form_phone_number,form_amount);
 
-        DatabaseReference mRef =  FirebaseDatabase.getInstance().getReference()
-                .child("User_Register_Vehicles")
-                .child(FirebaseAuth.getInstance().getCurrentUser().getUid());
-        key = mRef.push().getKey();
+                //Here we sent those wrapping userVehicle object in to firebase database under the User_Vehicles path.
 
-        vehicleEntry();
+                DatabaseReference mRef =  FirebaseDatabase.getInstance().getReference()
+                        .child("User_Register_Vehicles")
+                        .child(FirebaseAuth.getInstance().getCurrentUser().getUid());
+                key = mRef.push().getKey();
 
-        mRef.child(key).setValue(userVehicle).addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                if(task.isSuccessful()) {
+                vehicleEntry();
 
-                    //This is used to display the custom on completion dialogue
-                    dialog.setContentView(R.layout.pay_sucess_dialogue);
-                    ok_btn =  dialog.findViewById(R.id.ok);
-                    ok_btn.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            dialog.dismiss();
-                            editText_name.setText("");
-                            editText_vehicle_number.setText("");
-                            editText_amount.setText("");
-                            editText_phone_number.setText("");
+                mRef.child(key).setValue(userVehicle).addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if(task.isSuccessful()) {
+
+                            //This is used to display the custom on completion dialogue
+                            dialog.setContentView(R.layout.pay_sucess_dialogue);
+                            ok_btn =  dialog.findViewById(R.id.ok);
+                            ok_btn.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    dialog.dismiss();
+                                    editText_name.setText("");
+                                    editText_vehicle_number.setText("");
+                                    editText_amount.setText("");
+                                    editText_phone_number.setText("");
+                                }
+                            });
+                            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                            dialog.show();
                         }
-                    });
-                    dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-                    dialog.show();
-                }
+                    }
+                });
             }
-        });
+            else
+            {
+                Toast.makeText(getApplicationContext(),"All fields must be filled",Toast.LENGTH_SHORT).show();
+            }
+        }
+        else if(Common.user_type.equals("client"))
+        {
+            Toast.makeText(getApplicationContext(),"This feature is not for you",Toast.LENGTH_SHORT).show();
+        }
     }
 
     //This is for the navigation button control method
