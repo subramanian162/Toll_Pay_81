@@ -38,7 +38,7 @@ public class CustomClientAdapter extends ArrayAdapter<CrossedVehicle>{
         TextView vehicle_number =  client_view.findViewById(R.id.client_list_vehicle_number);
         TextView vehicle_amount =  client_view.findViewById(R.id.client_list_amount);
 
-        serial_number.setText(Integer.toString(position));
+        serial_number.setText(Integer.toString(position+1));
         vehicle_number.setText(vehicle_details.get(position).getCrossed_vehicle_number());
         vehicle_amount.setText(context.getString(R.string.plus)+vehicle_details.get(position).getGetCrossed_vehicle_amount());
 

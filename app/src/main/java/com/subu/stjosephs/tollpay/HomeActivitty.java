@@ -11,12 +11,8 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
-
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
@@ -31,15 +27,12 @@ import com.subu.stjosephs.tollpay.Objects.Vehicles_Entry;
 import com.subu.stjosephs.tollpay.adapters.CustomClientAdapter;
 import com.subu.stjosephs.tollpay.adapters.CustomUserAdapter;
 import com.subu.stjosephs.tollpay.common_variables.Common;
-
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class HomeActivitty extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    List<Vehicles_Entry> register_vehicles_list;
     Vehicles_Entry matched_vehicle_entry;
     FirebaseAuth mAuth;
     ListView home_list;
@@ -49,11 +42,6 @@ public class HomeActivitty extends AppCompatActivity
     List<CrossedVehicle> client_list;
     String last_crossed_vehicle_from_toll;
 
-    List<String> demo;
-
-    private String names[] = {"subramanian","suresh","dinesh","ramesh","subramanian","suresh","dinesh","ramesh","subramanian","suresh","dinesh","ramesh","subramanian","suresh","dinesh","ramesh",
-            "subramanian","suresh","dinesh","ramesh","subramanian","suresh","dinesh","ramesh","subramanian","suresh","dinesh","ramesh","subramanian","suresh","dinesh","ramesh",
-            "subramanian","suresh","dinesh","ramesh","subramanian","suresh","dinesh","ramesh"};
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,29 +53,27 @@ public class HomeActivitty extends AppCompatActivity
         {
             setContentView(R.layout.activity_home);
             user_Vehicle_List = new ArrayList<>();
-            home_list = (ListView)findViewById(R.id.home_list_view);
+            home_list = findViewById(R.id.home_list_view);
         }
         else if(Common.user_type.equals("client"))
         {
             setContentView(R.layout.activity_client_home);
             client_list = new ArrayList<>();
-            register_vehicles_list = new ArrayList<>();
-            home_list = (ListView)findViewById(R.id.client_home_list_view);
-            demo =new ArrayList<>();
+            home_list = findViewById(R.id.client_home_list_view);
         }
 
         //here we end the list view code snippeds
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar =  findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer =  findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        NavigationView navigationView =  findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
     }
 
@@ -182,6 +168,8 @@ public class HomeActivitty extends AppCompatActivity
                                                                             CrossedVehicle crossedVehicle = new CrossedVehicle(matched_user_Vehicle.getU_vehicle_number(),
                                                                                     Integer.toString(200));
                                                                             mRef.child("Crossed_Vehicles").push().setValue(crossedVehicle);
+
+                                                                            display_client_list_items();
                                                                             break;
                                                                         }
                                                                         case "Van": {
@@ -264,6 +252,29 @@ public class HomeActivitty extends AppCompatActivity
     //        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(getApplicationContext(),android.R.layout.simple_list_item_1
     //                        ,demo);
     //                        home_list.setAdapter(arrayAdapter);
+
+    public void display_client_list_items()
+    {
+        mRef.child("Crossed_Vehicles").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                client_list.clear();
+                for(DataSnapshot snapshot : dataSnapshot.getChildren())
+                {
+                    CrossedVehicle crossedVehicle = snapshot.getValue(CrossedVehicle.class);
+                    client_list.add(crossedVehicle);
+                }
+                CustomClientAdapter customClientAdapter = new CustomClientAdapter(HomeActivitty.this,client_list);
+                home_list.setAdapter(customClientAdapter);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
