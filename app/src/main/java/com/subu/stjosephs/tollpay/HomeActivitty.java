@@ -3,6 +3,7 @@ package com.subu.stjosephs.tollpay;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -18,6 +19,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -48,6 +50,7 @@ public class HomeActivitty extends AppCompatActivity
     String last_crossed_vehicle_from_toll;
 
     List<String> demo;
+
     private String names[] = {"subramanian","suresh","dinesh","ramesh","subramanian","suresh","dinesh","ramesh","subramanian","suresh","dinesh","ramesh","subramanian","suresh","dinesh","ramesh",
             "subramanian","suresh","dinesh","ramesh","subramanian","suresh","dinesh","ramesh","subramanian","suresh","dinesh","ramesh","subramanian","suresh","dinesh","ramesh",
             "subramanian","suresh","dinesh","ramesh","subramanian","suresh","dinesh","ramesh"};
@@ -70,6 +73,7 @@ public class HomeActivitty extends AppCompatActivity
             client_list = new ArrayList<>();
             register_vehicles_list = new ArrayList<>();
             home_list = (ListView)findViewById(R.id.client_home_list_view);
+            demo =new ArrayList<>();
         }
 
         //here we end the list view code snippeds
@@ -90,183 +94,171 @@ public class HomeActivitty extends AppCompatActivity
     @Override
     protected void onStart() {
         super.onStart();
-        if(mAuth.getCurrentUser()==null)
-        {
+        if (mAuth.getCurrentUser() == null) {
             finish();
-            startActivity(new Intent(HomeActivitty.this,LoginActivity.class));
+            startActivity(new Intent(HomeActivitty.this, LoginActivity.class));
         }
 
-        if(Common.user_type.equals("user"))
-        {
+        if (Common.user_type.equals("user")) {
             String Uid = null;
 
             FirebaseUser user = mAuth.getCurrentUser();
-            if(user!=null)
-            {
+            if (user != null) {
                 Uid = user.getUid();
             }
-                mRef.child("User_Vehicles")
+            mRef.child("User_Register_Vehicles")
                     .child(Uid)
-                     .addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    user_Vehicle_List.clear();
-                    for(DataSnapshot snapshot : dataSnapshot.getChildren())
-                    {
-                        UserVehicle userVehicle = snapshot.getValue(UserVehicle.class);
-                        user_Vehicle_List.add(userVehicle);
-                    }
-                    CustomUserAdapter customUserAdapter = new CustomUserAdapter(HomeActivitty.this,user_Vehicle_List);
-                    home_list.setAdapter(customUserAdapter);
-                }
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-                }
-            });
-
-        }
-        else if(Common.user_type.equals("client"))
-        {
-                mRef.child("Vehicles_Number")
                     .addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot)
-                {
-                    List<String> check_number_list = new ArrayList<>();
-                    check_number_list.clear();
-                    for(DataSnapshot snapshot : dataSnapshot.getChildren())
-                    {
-                         check_number_list.add(snapshot.getValue().toString());
-                    }
-                   //here we get the last crossed vehicle number from camera
-
-                    last_crossed_vehicle_from_toll = check_number_list.get(check_number_list.size()-1);
-
-                    //check one
-
-                    get_all_register_vehicles_list();
-                    //find_the_crossed_vehicle_match();
-                    //update_the_amount();
-                }
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-                }
-            });
-        }
-    }
-
-    public void get_all_register_vehicles_list()
-    {
-            mRef.child("Vehicles_Entry")
-                .addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                        register_vehicles_list.clear();
-                        for(DataSnapshot snapshot : dataSnapshot.getChildren())
-                        {
-                            Vehicles_Entry vehicles_entry = snapshot.getValue(Vehicles_Entry.class);
-                            register_vehicles_list.add(vehicles_entry);
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            user_Vehicle_List.clear();
+                            for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                                UserVehicle userVehicle = snapshot.getValue(UserVehicle.class);
+                                user_Vehicle_List.add(userVehicle);
+                            }
+                            CustomUserAdapter customUserAdapter = new CustomUserAdapter(HomeActivitty.this, user_Vehicle_List);
+                            home_list.setAdapter(customUserAdapter);
                         }
-                        find_the_crossed_vehicle_match();
-                    }
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-                    }
-                });
-    }
 
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+                        }
+                    });
 
-    public void find_the_crossed_vehicle_match()
-    {
-        for(int count = 0; count<register_vehicles_list.size();count++)
-        {
-            Vehicles_Entry inner_use = register_vehicles_list.get(count);
-            //check for matching vehicles
-            if(last_crossed_vehicle_from_toll.equals(inner_use.getVehicle_number()))
-            {
-                matched_vehicle_entry = inner_use;
-
-                    mRef.child("User_Vehicles")
-                        .child(inner_use.getUid())
-                        .child(inner_use.getKey())
-                        .addListenerForSingleValueEvent(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                                matched_user_Vehicle = dataSnapshot.getValue(UserVehicle.class);
-                                update_the_amount();
-                            }
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError databaseError) {
-                            }
-                        });
-            }
         }
-    }
-    public void update_the_amount()
-    {
-        // This for the amount update code
+        else if (Common.user_type.equals("client")) {
 
-        switch (matched_user_Vehicle.getU_vehicle_type()) {
-            case "Car": {
-                Integer update_amount = Integer.parseInt(matched_user_Vehicle.getU_amount()) - 200;
-                mRef.child("User_Vehicles")
-                        .child(matched_vehicle_entry.getUid())
-                        .child(matched_vehicle_entry.getKey())
-                        .child("u_amount")
-                        .setValue(Integer.toString(update_amount).trim());
-                //check this part of below code
-                CrossedVehicle crossedVehicle = new CrossedVehicle(matched_user_Vehicle.getU_vehicle_type(),
-                        Integer.toString(200));
-                mRef.child("Crossed_Vehicles").push().setValue(crossedVehicle);
-                break;
-            }
-            case "Van": {
-                Integer update_amount = Integer.parseInt(matched_user_Vehicle.getU_amount()) - 200;
-                mRef.child("User_Vehicles")
-                        .child(matched_vehicle_entry.getUid())
-                        .child(matched_vehicle_entry.getKey())
-                        .child("u_amount")
-                        .setValue(Integer.toString(update_amount).trim());
-                //check this part of below code
-                CrossedVehicle crossedVehicle = new CrossedVehicle(matched_user_Vehicle.getU_vehicle_type(),
-                        Integer.toString(200));
-                mRef.child("Crossed_Vehicles").push().setValue(crossedVehicle);
-                break;
-            }
-            case "Auto": {
-                Integer update_amount = Integer.parseInt(matched_user_Vehicle.getU_amount()) - 200;
-                mRef.child("User_Vehicles")
-                        .child(matched_vehicle_entry.getUid())
-                        .child(matched_vehicle_entry.getKey())
-                        .child("u_amount")
-                        .setValue(Integer.toString(update_amount).trim());
-                //check this part of below code
-                CrossedVehicle crossedVehicle = new CrossedVehicle(matched_user_Vehicle.getU_vehicle_type(),
-                        Integer.toString(200));
-                mRef.child("Crossed_Vehicles").push().setValue(crossedVehicle);
-                break;
-            }
-            case "Lorry": {
-                Integer update_amount = Integer.parseInt(matched_user_Vehicle.getU_amount()) - 200;
-                mRef.child("User_Vehicles")
-                        .child(matched_vehicle_entry.getUid())
-                        .child(matched_vehicle_entry.getKey())
-                        .child("u_amount")
-                        .setValue(Integer.toString(update_amount).trim());
-                //check this part of below code
-                CrossedVehicle crossedVehicle = new CrossedVehicle(matched_user_Vehicle.getU_vehicle_type(),
-                        Integer.toString(200));
-                mRef.child("Crossed_Vehicles").push().setValue(crossedVehicle);
-                break;
-            }
+            mRef.child("Vehicles_Number")
+                    .addChildEventListener(new ChildEventListener() {
+                        @Override
+                        public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                            //here we find the last crossed vehicle number from the data base
+
+                            last_crossed_vehicle_from_toll = dataSnapshot.getValue().toString();
+
+                            //here we need to find the correct match vehicle root
+
+                            mRef.child("Common_Vehicles_list")
+                                    .addListenerForSingleValueEvent(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                                            for(DataSnapshot snapshot : dataSnapshot.getChildren())
+                                            {
+                                                Vehicles_Entry vehicles_entry = snapshot.getValue(Vehicles_Entry.class);
+
+                                                //check for matching vehicles from the User_Vehicles entry
+
+                                                if(last_crossed_vehicle_from_toll.equals(vehicles_entry.getVehicle_number()))
+                                                {
+
+                                                    //this is for later use
+
+                                                    matched_vehicle_entry = vehicles_entry;
+
+                                                    mRef.child("User_Register_Vehicles")
+                                                            .child(vehicles_entry.getUid())
+                                                            .child(vehicles_entry.getKey())
+                                                            .addListenerForSingleValueEvent(new ValueEventListener() {
+                                                                @Override
+                                                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                                                                    //Here we find the matched user vehicle from the data base
+
+                                                                    matched_user_Vehicle = dataSnapshot.getValue(UserVehicle.class);
+
+                                                                    //here we update the amount details
+
+                                                                    switch (matched_user_Vehicle.getU_vehicle_type()) {
+                                                                        case "Car": {
+                                                                            Integer update_amount = Integer.parseInt(matched_user_Vehicle.getU_amount()) - 200;
+                                                                            mRef.child("User_Register_Vehicles")
+                                                                                    .child(matched_vehicle_entry.getUid())
+                                                                                    .child(matched_vehicle_entry.getKey())
+                                                                                    .child("u_amount")
+                                                                                    .setValue(Integer.toString(update_amount).trim());
+                                                                            //check this part of below code
+                                                                            CrossedVehicle crossedVehicle = new CrossedVehicle(matched_user_Vehicle.getU_vehicle_number(),
+                                                                                    Integer.toString(200));
+                                                                            mRef.child("Crossed_Vehicles").push().setValue(crossedVehicle);
+                                                                            break;
+                                                                        }
+                                                                        case "Van": {
+                                                                            Integer update_amount = Integer.parseInt(matched_user_Vehicle.getU_amount()) - 200;
+                                                                            mRef.child("User_Register_Vehicles")
+                                                                                    .child(matched_vehicle_entry.getUid())
+                                                                                    .child(matched_vehicle_entry.getKey())
+                                                                                    .child("u_amount")
+                                                                                    .setValue(Integer.toString(update_amount).trim());
+                                                                            //check this part of below code
+                                                                            CrossedVehicle crossedVehicle = new CrossedVehicle(matched_user_Vehicle.getU_vehicle_number(),
+                                                                                    Integer.toString(200));
+                                                                            mRef.child("Crossed_Vehicles").push().setValue(crossedVehicle);
+                                                                            break;
+                                                                        }
+                                                                        case "Auto": {
+                                                                            Integer update_amount = Integer.parseInt(matched_user_Vehicle.getU_amount()) - 200;
+                                                                            mRef.child("User_Register_Vehicles")
+                                                                                    .child(matched_vehicle_entry.getUid())
+                                                                                    .child(matched_vehicle_entry.getKey())
+                                                                                    .child("u_amount")
+                                                                                    .setValue(Integer.toString(update_amount).trim());
+                                                                            //check this part of below code
+                                                                            CrossedVehicle crossedVehicle = new CrossedVehicle(matched_user_Vehicle.getU_vehicle_number(),
+                                                                                    Integer.toString(200));
+                                                                            mRef.child("Crossed_Vehicles").push().setValue(crossedVehicle);
+                                                                            break;
+                                                                        }
+                                                                        case "Lorry": {
+                                                                            Integer update_amount = Integer.parseInt(matched_user_Vehicle.getU_amount()) - 200;
+                                                                            mRef.child("User_Register_Vehicles")
+                                                                                    .child(matched_vehicle_entry.getUid())
+                                                                                    .child(matched_vehicle_entry.getKey())
+                                                                                    .child("u_amount")
+                                                                                    .setValue(Integer.toString(update_amount).trim());
+                                                                            //check this part of below code
+                                                                            CrossedVehicle crossedVehicle = new CrossedVehicle(matched_user_Vehicle.getU_vehicle_number(),
+                                                                                    Integer.toString(200));
+                                                                            mRef.child("Crossed_Vehicles").push().setValue(crossedVehicle);
+                                                                            break;
+                                                                        }
+                                                                    }
+                                                                }
+                                                                @Override
+                                                                public void onCancelled(@NonNull DatabaseError databaseError) {
+                                                                }
+                                                            });
+                                                }
+                                            }
+                                        }
+                                        @Override
+                                        public void onCancelled(@NonNull DatabaseError databaseError) {
+                                            }
+                                    });
+                        }
+                        @Override
+                        public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                        }
+
+                        @Override
+                        public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+                        }
+
+                        @Override
+                        public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
         }
-        demo.clear();
-        demo.add(matched_user_Vehicle.getU_phone_number());
-        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(getApplicationContext(),android.R.layout.simple_list_item_1
-                                        ,demo);
-        home_list.setAdapter(arrayAdapter);
+
     }
 
     //        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(getApplicationContext(),android.R.layout.simple_list_item_1

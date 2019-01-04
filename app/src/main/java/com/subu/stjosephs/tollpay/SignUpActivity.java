@@ -23,8 +23,6 @@ public class SignUpActivity extends AppCompatActivity {
     private EditText new_password;
     private EditText confirm_password;
     private String s_email;
-    private String s_password;
-    private String c_password;
     private FirebaseAuth mAuth;
     private ProgressBar sign_up_progress;
     private User update_user;
@@ -34,30 +32,20 @@ public class SignUpActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up);
 
-        email = (EditText)findViewById(R.id.sign_up_email_id);
-        new_password = (EditText)findViewById(R.id.sign_up_password_id);
-        confirm_password = (EditText)findViewById(R.id.confirm_password_id);
-        sign_up_progress = (ProgressBar)findViewById(R.id.sign_up_progress_bar_id);
+        email = findViewById(R.id.sign_up_email_id);
+        new_password = findViewById(R.id.sign_up_password_id);
+        confirm_password = findViewById(R.id.confirm_password_id);
+        sign_up_progress = findViewById(R.id.sign_up_progress_bar_id);
 
         mAuth = FirebaseAuth.getInstance();
 
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        if(mAuth.getCurrentUser()!=null)
-        {
-            finish();
-            startActivity(new Intent(SignUpActivity.this,HomeActivitty.class));
-        }
-    }
-
     public void sign_up_user(View view)
     {
         s_email = email.getText().toString().trim();
-        s_password = new_password.getText().toString().trim();
-        c_password = confirm_password.getText().toString().trim();
+        String s_password = new_password.getText().toString().trim();
+        String c_password = confirm_password.getText().toString().trim();
 
         if(s_email.isEmpty())
         {
@@ -94,7 +82,7 @@ public class SignUpActivity extends AppCompatActivity {
 
         sign_up_progress.setVisibility(View.VISIBLE);
 
-        mAuth.createUserWithEmailAndPassword(s_email,s_password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+        mAuth.createUserWithEmailAndPassword(s_email, s_password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
 
@@ -110,7 +98,7 @@ public class SignUpActivity extends AppCompatActivity {
                             public void onComplete(@NonNull Task<Void> task) {
                                 sign_up_progress.setVisibility(View.GONE);
                                 if (task.isSuccessful()) {
-                                    Toast.makeText(SignUpActivity.this, "Account added sucessfully", Toast.LENGTH_LONG).show();
+                                    Toast.makeText(SignUpActivity.this, "Your Client account added successfully", Toast.LENGTH_LONG).show();
                                     finish();
                                     Intent intent = new Intent(SignUpActivity.this,HomeActivitty.class);
                                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -132,7 +120,7 @@ public class SignUpActivity extends AppCompatActivity {
                             public void onComplete(@NonNull Task<Void> task) {
                                 sign_up_progress.setVisibility(View.GONE);
                                 if (task.isSuccessful()) {
-                                    Toast.makeText(SignUpActivity.this, "Account added sucessfully", Toast.LENGTH_LONG).show();
+                                    Toast.makeText(SignUpActivity.this, "Your User account added successfully", Toast.LENGTH_LONG).show();
                                     finish();
                                     Intent intent = new Intent(SignUpActivity.this,HomeActivitty.class);
                                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);

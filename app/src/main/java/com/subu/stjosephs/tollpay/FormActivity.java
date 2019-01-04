@@ -108,7 +108,7 @@ public class FormActivity extends AppCompatActivity implements NavigationView.On
         Vehicles_Entry vehicles_entry = new Vehicles_Entry(FirebaseAuth.getInstance().getCurrentUser().getUid(),
                 form_vehicle_number,key);
         FirebaseDatabase.getInstance().getReference()
-                .child("Vehicles_Entry")
+                .child("Common_Vehicles_list")
                 .push().setValue(vehicles_entry);
     }
     public void payAmount(View view)
@@ -125,7 +125,7 @@ public class FormActivity extends AppCompatActivity implements NavigationView.On
         //Here we sent those wrapping userVehicle object in to firebase database under the User_Vehicles path.
 
         DatabaseReference mRef =  FirebaseDatabase.getInstance().getReference()
-                .child("User_Vehicles")
+                .child("User_Register_Vehicles")
                 .child(FirebaseAuth.getInstance().getCurrentUser().getUid());
         key = mRef.push().getKey();
 

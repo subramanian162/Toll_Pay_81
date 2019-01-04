@@ -41,9 +41,9 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        email = (EditText)findViewById(R.id.sign_in_email_id);
-        password = (EditText)findViewById(R.id.sign_in_password_id);
-        sign_in_progress = (ProgressBar)findViewById(R.id.sign_in_progress_bar_id);
+        email = findViewById(R.id.sign_in_email_id);
+        password = findViewById(R.id.sign_in_password_id);
+        sign_in_progress = findViewById(R.id.sign_in_progress_bar_id);
 
         mAuth = FirebaseAuth.getInstance();
         user = mAuth.getCurrentUser();
@@ -125,6 +125,7 @@ public class LoginActivity extends AppCompatActivity {
               }
               else
               {
+                  sign_in_progress.setVisibility(View.GONE);
                   Toast.makeText(getApplicationContext(),task.getException().toString(),Toast.LENGTH_SHORT).show();
               }
             }
@@ -165,7 +166,7 @@ public class LoginActivity extends AppCompatActivity {
                 sign_in_progress.setVisibility(View.GONE);
                 if(cross_check==1)
                 {
-                    Toast.makeText(LoginActivity.this, "Enter the correct id", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(LoginActivity.this, "You are not a client", Toast.LENGTH_SHORT).show();
                 }
             }
             @Override
