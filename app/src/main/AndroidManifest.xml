@@ -16,16 +16,20 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".LoginActivity" />
-        <activity android:name=".SignUpActivity" />
+        <activity android:name=".LoginActivity"
+            android:label=""/>
+        <activity android:name=".SignUpActivity"
+            android:label=""/>
         <activity
-            android:name=".HomeActivitty"
-            android:label="@string/title_activity_home_activitty"
+            android:name=".HomeActivity"
+            android:label="Home"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".FormActivity"
-            android:label="Vehicle details"
+            android:label="Enter the details"
             android:theme="@style/AppTheme.NoActionBar"></activity>
+        <activity android:name=".AmountActivity"
+            android:label="Enter Amount"/>
     </application>
 
 </manifest>

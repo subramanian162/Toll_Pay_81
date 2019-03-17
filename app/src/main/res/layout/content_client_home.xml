@@ -6,77 +6,76 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="#8ebbe2"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context=".HomeActivitty"
+    tools:context=".HomeActivity"
     android:padding="8dp"
     tools:showIn="@layout/app_bar_client_home">
 
+    <TextView
+        android:layout_width="match_parent"
+        android:text="Crossed Vehicles:"
+        android:padding="12sp"
+        android:textAppearance="@style/Base.TextAppearance.AppCompat.Subhead"
+        android:layout_height="wrap_content" />
     <LinearLayout
         android:layout_width="match_parent"
         android:orientation="horizontal"
-        android:padding="12dp"
+        android:padding="3dp"
         android:layout_height="wrap_content">
-        <TextView
-            android:layout_width="0dp"
-            android:layout_weight="2"
-            android:text="Total Amount Earned:"
-            android:textSize="25sp"
-            android:textStyle="bold"
-            android:layout_height="match_parent" />
-        <TextView
-            android:id="@+id/client_total_amount"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:text="Rs,0 /-"
-            android:gravity="center"
-            android:textSize="21sp"
-            android:textColor="#560c10"
-            android:layout_height="match_parent" />
 
-    </LinearLayout>
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:orientation="horizontal"
-        android:layout_height="wrap_content">
         <TextView
-            android:id="@+id/client_list_serial_number"
             android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="wrap_content"
             android:text="S.N"
-            android:textSize="20sp"
-            android:background="#8ebbe2"
-            android:textColor="#252323"
-            android:gravity="center"/>
-        <TextView
-            android:id="@+id/client_list_vehicle_number"
-            android:layout_width="0dp"
-            android:layout_weight="6"
-            android:text="Crossed Vehicles"
-            android:background="#8ebbe2"
-            android:textSize="20sp"
             android:gravity="center"
-            android:textColor="#252323"
+            android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
+            android:layout_weight="0.8"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:layout_width="0dp"
+            android:text="Date"
+            android:gravity="center"
+            android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
+            android:layout_weight="1"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:layout_width="0dp"
+            android:text="Time"
+            android:gravity="center"
+            android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
+            android:layout_weight="1"
             android:layout_height="wrap_content" />
 
         <TextView
-            android:id="@+id/client_list_amount"
             android:layout_width="0dp"
-            android:layout_weight="2"
-            android:textSize="20sp"
-            android:background="#8ebbe2"
-            android:textColor="#252323"
+            android:text="Vehicle Number"
+            android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
+            android:layout_weight="3"
             android:gravity="center"
-            android:layout_height="wrap_content"
-            android:text="Amount"/>
+            android:layout_height="wrap_content" />
+        <TextView
+            android:layout_width="0dp"
+            android:text="Amount"
+            android:layout_weight="2"
+            android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
+            android:gravity="center"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:layout_width="0dp"
+            android:text="Status"
+            android:layout_weight="2"
+            android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
+            android:gravity="center"
+            android:layout_height="wrap_content" />
+
     </LinearLayout>
 
     <ListView
         android:id="@+id/client_home_list_view"
         android:layout_width="match_parent"
-        android:background="#8ebbe2"
-        android:layout_height="match_parent">
+        android:layout_weight="2"
+        android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
+        android:padding="2sp"
+        android:layout_height="0dp">
 
     </ListView>
 

@@ -1,5 +1,6 @@
 package com.subu.stjosephs.tollpay.adapters;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -9,47 +10,46 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-import com.subu.stjosephs.tollpay.Objects.UserVehicle;
+import com.subu.stjosephs.tollpay.Objects.User_R_Vehicles;
 import com.subu.stjosephs.tollpay.R;
 
 import java.util.List;
 
-public class CustomUserAdapter extends ArrayAdapter<UserVehicle> {
+public class CustomUserAdapter extends ArrayAdapter<User_R_Vehicles> {
 
     private Activity context;
-    private List<UserVehicle> userVehicleList;
+    private List<User_R_Vehicles> userVehicleList;
 
 
-    public CustomUserAdapter(Activity context1, List<UserVehicle> list) {
+    public CustomUserAdapter(Activity context1, List<User_R_Vehicles> list) {
         super(context1, R.layout.user_list_item_view,list);
         this.context = context1;
         this.userVehicleList = list;
     }
 
+    @SuppressLint("ResourceAsColor")
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
 
         LayoutInflater layoutInflater = context.getLayoutInflater();
 
-        View listItemView = layoutInflater.inflate(R.layout.user_list_item_view,null,true);
+        View client_view = layoutInflater.inflate(R.layout.client_list_item_view,null,true);
 
         //here we find the individual TextView id's
 
-        TextView name = (TextView)listItemView.findViewById(R.id.item_name_id);
-        TextView vehicle_number = (TextView)listItemView.findViewById(R.id.item_vehicle_number_id);
-        TextView vehicle_type = (TextView) listItemView.findViewById(R.id.item_vehicle_type_id);
-        TextView number = (TextView) listItemView.findViewById(R.id.item_phone_number_id);
-        TextView amount = (TextView) listItemView.findViewById(R.id.item_rupees_id);
+
+        TextView serial_number = client_view.findViewById(R.id.list_sn);
+        TextView date = client_view.findViewById(R.id.list_date);
+        TextView time = client_view.findViewById(R.id.list_time);
+        TextView vehicle_number =  client_view.findViewById(R.id.list_number);
+        TextView vehicle_amount =  client_view.findViewById(R.id.list_amount);
+        TextView status = client_view.findViewById(R.id.list_status);
 
         //Here we assign the individual values to the TexxtView
-
-        name.setText(userVehicleList.get(position).getU_name());
+        serial_number.setText(Integer.toString(position+1));
         vehicle_number.setText(userVehicleList.get(position).getU_vehicle_number());
-        vehicle_type.setText(userVehicleList.get(position).getU_vehicle_type());
-        number.setText(userVehicleList.get(position).getU_phone_number());
-        amount.setText(userVehicleList.get(position).getU_amount());
 
-        return listItemView;
+        return client_view;
     }
 }

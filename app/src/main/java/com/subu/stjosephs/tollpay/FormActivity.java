@@ -1,9 +1,6 @@
 package com.subu.stjosephs.tollpay;
 
-import android.app.Dialog;
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -18,58 +15,52 @@ import android.widget.Button;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.Toast;
-
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.subu.stjosephs.tollpay.Objects.UserVehicle;
-import com.subu.stjosephs.tollpay.Objects.Vehicles_Entry;
+import com.subu.stjosephs.tollpay.Objects.Register_Vehicles;
+import com.subu.stjosephs.tollpay.Objects.User_R_Vehicles;
 import com.subu.stjosephs.tollpay.common_variables.Common;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 public class FormActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener  {
 
-    FirebaseAuth mAuth;
-    private EditText editText_name;
-    private EditText editText_vehicle_number;
-    private EditText editText_phone_number;
-    private EditText editText_amount;
-    String form_name;
-    String form_vehicle_number;
-    String form_vehicle_type;
-    String form_phone_number;
-    String form_amount;
-    String key;
-    private String vehicle_type[] = {"Van","Car","Auto","Lorry"};
-    Dialog dialog;
-    private Button ok_btn;
-    UserVehicle userVehicle;
+    protected EditText editText_vehicle_number;
+    protected EditText editText_vehicle_state;
+    protected EditText editText_vehicle_country;
+    protected String form_vehicle_number;
+    protected String form_vehicle_type;
+    protected ProgressBar progressBar;
+    private String vehicle_type[] = {"Light Motor Vehicles","Light Commercial Vehicles","Buses/Trucks","Multi-Axle Vehicles","Over sized Vehicles"};
+    protected Button ok_btn;
+    protected String key;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_form);
 
-        //This is general text and button initializer
+        key = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
 
-        mAuth = FirebaseAuth.getInstance();
-        dialog = new Dialog(this);
-        editText_name =  findViewById(R.id.form_full_name_id);
+        ok_btn = findViewById(R.id.pay_btn);
         editText_vehicle_number = findViewById(R.id.form_vehicle_id);
-        editText_phone_number = findViewById(R.id.form_phone_id);
-        editText_amount = findViewById(R.id.form_amount_id);
-
-        //This below line of code for the spinner  initializer
+        editText_vehicle_state = findViewById(R.id.form_vehicle_state);
+        editText_vehicle_country = findViewById(R.id.form_vehicle_country);
+        progressBar = findViewById(R.id.form_progress_bar_id);
 
         Spinner vehicle_type_spinner =  findViewById(R.id.form_vehicle_type_spinner_id);
+
         ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(getApplicationContext(),android.R.layout.simple_spinner_item, Arrays.asList(vehicle_type));
+
         arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         vehicle_type_spinner.setAdapter(arrayAdapter);
+
         vehicle_type_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -81,6 +72,72 @@ public class FormActivity extends AppCompatActivity implements NavigationView.On
             }
         });
 
+        ok_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(Common.user_type.equals("user"))
+                {
+                    progressBar.setVisibility(View.VISIBLE);
+                    form_vehicle_number = editText_vehicle_number.getText().toString().trim();
+                    String form_vehicle_state = editText_vehicle_state.getText().toString().trim();
+                    String form_vehicle_country = editText_vehicle_country.getText().toString().trim();
+
+                    if(!form_vehicle_number.equals("") && !form_vehicle_state.equals("") && !form_vehicle_country.equals(""))
+                    {
+                        User_R_Vehicles userVehicle = new User_R_Vehicles(form_vehicle_number,form_vehicle_type);
+                        FirebaseDatabase.getInstance().getReference("Users")
+                                .child(key)
+                                .child("User_R_Vehicles")
+                                .push()
+                                .setValue(userVehicle)
+                                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        if(task.isComplete())
+                                        {
+                                            Register_Vehicles register_vehicles =
+                                                    new Register_Vehicles(form_vehicle_number,form_vehicle_type,key);
+                                            FirebaseDatabase.getInstance().getReference("Register_Vehicles")
+                                                    .push()
+                                                    .setValue(register_vehicles)
+                                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                        @Override
+                                                        public void onComplete(@NonNull Task<Void> task) {
+                                                            if(task.isComplete())
+                                                            {
+                                                                editText_vehicle_number.setText("");
+                                                                editText_vehicle_country.setText("");
+                                                                editText_vehicle_state.setText("");
+                                                                progressBar.setVisibility(View.GONE);
+                                                                Toast.makeText(getApplicationContext(),"Your Vehicle is added Successfully",Toast.LENGTH_SHORT).show();
+                                                            }
+                                                        }
+                                                    });
+                                        }
+                                        else if(task.isCanceled())
+                                        {
+                                            progressBar.setVisibility(View.GONE);
+                                            Toast.makeText(getApplicationContext(), "You canceled the process", Toast.LENGTH_SHORT).show();
+                                        }
+                                        else
+                                        {
+                                            progressBar.setVisibility(View.GONE);
+                                            Toast.makeText(getApplicationContext(),"Try Later...",Toast.LENGTH_SHORT).show();
+                                        }
+                                    }
+                                });
+                    }
+                    else {
+                        progressBar.setVisibility(View.GONE);
+                        Toast.makeText(getApplicationContext(),"Must Fill all details",Toast.LENGTH_SHORT).show();
+                    }
+                }
+                else if(Common.user_type.equals("client"))
+                {
+                    Toast.makeText(getApplicationContext(),"This feature is not for you",Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
         // This is for the toolbar initialisation code sniffet
 
         Toolbar toolbar =  findViewById(R.id.toolbar);
@@ -97,85 +154,10 @@ public class FormActivity extends AppCompatActivity implements NavigationView.On
 
     }
 
-
-    public void pay()
-    {
-     FirebaseDatabase.getInstance().getReference()
-     .child("Vehicles_Number")
-     .push().setValue(editText_vehicle_number.getText().toString());
-    }
-    public void vehicleEntry()
-    {
-        Vehicles_Entry vehicles_entry = new Vehicles_Entry(FirebaseAuth.getInstance().getCurrentUser().getUid(),
-                form_vehicle_number,key);
-        FirebaseDatabase.getInstance().getReference()
-                .child("Common_Vehicles_list")
-                .push().setValue(vehicles_entry);
-    }
-    public void payAmount(View view)
-    {
-        if(Common.user_type.equals("user"))
-        {
-
-            //Here we get the form details and wrap it in a single userVehicle object
-
-            form_name = editText_name.getText().toString();
-            form_vehicle_number = editText_vehicle_number.getText().toString();
-            form_phone_number = editText_phone_number.getText().toString();
-            form_amount = editText_amount.getText().toString();
-            if(!form_name.equals("") && !form_vehicle_number.equals("") && !form_phone_number.equals("") && !form_amount.equals(""))
-            {
-                pay();
-                userVehicle = new UserVehicle(form_name,form_vehicle_number,form_vehicle_type,form_phone_number,form_amount);
-
-                //Here we sent those wrapping userVehicle object in to firebase database under the User_Vehicles path.
-
-                DatabaseReference mRef =  FirebaseDatabase.getInstance().getReference()
-                        .child("User_Register_Vehicles")
-                        .child(FirebaseAuth.getInstance().getCurrentUser().getUid());
-                key = mRef.push().getKey();
-
-                vehicleEntry();
-
-                mRef.child(key).setValue(userVehicle).addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if(task.isSuccessful()) {
-
-                            //This is used to display the custom on completion dialogue
-                            dialog.setContentView(R.layout.pay_sucess_dialogue);
-                            ok_btn =  dialog.findViewById(R.id.ok);
-                            ok_btn.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    dialog.dismiss();
-                                    editText_name.setText("");
-                                    editText_vehicle_number.setText("");
-                                    editText_amount.setText("");
-                                    editText_phone_number.setText("");
-                                }
-                            });
-                            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-                            dialog.show();
-                        }
-                    }
-                });
-            }
-            else
-            {
-                Toast.makeText(getApplicationContext(),"All fields must be filled",Toast.LENGTH_SHORT).show();
-            }
-        }
-        else if(Common.user_type.equals("client"))
-        {
-            Toast.makeText(getApplicationContext(),"This feature is not for you",Toast.LENGTH_SHORT).show();
-        }
-    }
-
     //This is for the navigation button control method
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
@@ -184,7 +166,7 @@ public class FormActivity extends AppCompatActivity implements NavigationView.On
             Toast.makeText(getApplicationContext(),"You are already in that page",Toast.LENGTH_SHORT).show();
         } else if (id == R.id.nav_home) {
             finish();
-            startActivity(new Intent(getApplicationContext(),HomeActivitty.class));
+            startActivity(new Intent(getApplicationContext(),HomeActivity.class));
 
         } else if (id == R.id.nav_send) {
 

@@ -1,8 +1,6 @@
 package com.subu.stjosephs.tollpay;
 
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -18,23 +16,22 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.subu.stjosephs.tollpay.Objects.User;
 import com.subu.stjosephs.tollpay.common_variables.Common;
-
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Objects;
 
 public class LoginActivity extends AppCompatActivity {
 
-    private EditText email,password;
-    public String s_email,s_password;
-    public FirebaseAuth mAuth;
+    private EditText email;
+    private EditText password;
+    protected String s_email;
+    protected String s_password;
     private ProgressBar sign_in_progress;
-    public FirebaseUser user;
-    private DatabaseReference myRef;
+
+    private FirebaseUser firebaseUser;
+    private FirebaseAuth mAuth;
+    private String reference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,7 +43,7 @@ public class LoginActivity extends AppCompatActivity {
         sign_in_progress = findViewById(R.id.sign_in_progress_bar_id);
 
         mAuth = FirebaseAuth.getInstance();
-        user = mAuth.getCurrentUser();
+        firebaseUser = mAuth.getCurrentUser();
     }
 
     @Override
@@ -54,23 +51,22 @@ public class LoginActivity extends AppCompatActivity {
         super.onStart();
         if(Common.user_type.equals("user"))
         {
-            if(mAuth.getCurrentUser()!=null)
+            if(firebaseUser!=null)
             {
                 sign_in_progress.setVisibility(View.VISIBLE);
-                myRef = FirebaseDatabase.getInstance().getReference("Users");
-                start_email_check(myRef);
+                reference = "User_ids";
+                start_email_check(reference);
             }
         }
         else if(Common.user_type.equals("client"))
         {
-            if(mAuth.getCurrentUser()!=null)
+            if(firebaseUser!=null)
             {
                 sign_in_progress.setVisibility(View.VISIBLE);
-                myRef = FirebaseDatabase.getInstance().getReference("Clients");
-                start_email_check(myRef);
+                reference = "Client_ids";
+                start_email_check(reference);
             }
         }
-
     }
 
     public void sign_in_user(View view)
@@ -114,118 +110,69 @@ public class LoginActivity extends AppCompatActivity {
 
                   if(Common.user_type.equals("user"))
                   {
-                      myRef = FirebaseDatabase.getInstance().getReference("Users");
-                      email_check();
+                      reference = "User_ids";
+                      start_email_check(reference);
                   }
                   else if(Common.user_type.equals("client"))
                   {
-                      myRef = FirebaseDatabase.getInstance().getReference("Clients");
-                      email_check();
+                      reference = "Client_ids";
+                      start_email_check(reference);
                   }
               }
               else
               {
                   sign_in_progress.setVisibility(View.GONE);
-                  Toast.makeText(getApplicationContext(),task.getException().toString(),Toast.LENGTH_SHORT).show();
+                  Toast.makeText(getApplicationContext(),Objects.requireNonNull(task.getException()).toString(),Toast.LENGTH_SHORT).show();
               }
             }
         });
     }
 
-    public void email_check()
+
+    public void start_email_check(String  myref)
     {
         // Read from the database
-        myRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                // This method is called once with the initial value and again
-                // whenever data at this location is updated.
-                int cross_check = 1;
-                for(DataSnapshot email_snapshot : dataSnapshot.getChildren() )
-                {
-                    User user_mail = email_snapshot.getValue(User.class);
+        FirebaseDatabase.getInstance().getReference("Mail_ids")
+                .child(myref)
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                    if(user_mail.getEmail_id().equals(null))
-                    {
-                        cross_check = 2;
-                        sign_in_progress.setVisibility(View.GONE);
-                        Toast.makeText(getApplicationContext(),"The user branch has no users",Toast.LENGTH_SHORT).show();
-                        break;
-                    }
-                    else if (user_mail.getEmail_id().equals(s_email))
-                    {
-                        cross_check = 3;
-                        sign_in_progress.setVisibility(View.GONE);
-                        finish();
-                        Intent intent = new Intent(LoginActivity.this, HomeActivitty.class);
-                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                        startActivity(intent);
-                        break;
-                    }
-                }
-                sign_in_progress.setVisibility(View.GONE);
-                if(cross_check==1)
-                {
-                    Toast.makeText(LoginActivity.this, "You are not a client", Toast.LENGTH_SHORT).show();
-                }
-            }
-            @Override
-            public void onCancelled(DatabaseError error) {
-                // Failed to read value
-            }
-        });
-    }
+                        int check = 1;
+                        String current_user_mail = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getEmail();
+                        for(DataSnapshot email_snapshot : dataSnapshot.getChildren())
+                        {
+                            String email = email_snapshot.getValue(String.class);
 
-    public void start_email_check(DatabaseReference  myref)
-    {
-        // Read from the database
+                            if(email != null && email.equals(current_user_mail))
+                            {
+                                check++;
+                                sign_in_progress.setVisibility(View.GONE);
+                                finish();
+                                startActivity(new Intent(LoginActivity.this,HomeActivity.class));
+                            }
+                        }
+                        if(check==1)
+                        {
+                            if(Common.user_type.equals("user"))
+                            {
+                                sign_in_progress.setVisibility(View.GONE);
+                                Toast.makeText(getApplicationContext(), "You first logout the Client account", Toast.LENGTH_SHORT).show();
+                            }
+                            else if(Common.user_type.equals("client"))
+                            {
+                                sign_in_progress.setVisibility(View.GONE);
+                                Toast.makeText(getApplicationContext(), "You first logout the User account", Toast.LENGTH_SHORT).show();
+                            }
 
-        myref.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                // This method is called once with the initial value and again
-                // whenever data at this location is updated.
-                int cross_check = 1;
-                for(DataSnapshot email_snapshot : dataSnapshot.getChildren() )
-                {
-                    User user_mail = email_snapshot.getValue(User.class);
+                        }
+                    }
 
-                    if(user_mail.getEmail_id().equals(null))
-                    {
-                        cross_check = 2;
-                        sign_in_progress.setVisibility(View.GONE);
-                        Toast.makeText(getApplicationContext(),"The user branch has no users",Toast.LENGTH_SHORT).show();
-                        break;
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
                     }
-                    else if (user_mail.getEmail_id().equals(mAuth.getCurrentUser().getEmail().toString().trim()))
-                    {
-                        cross_check = 3;
-                        sign_in_progress.setVisibility(View.GONE);
-                        finish();
-                        Intent intent = new Intent(LoginActivity.this, HomeActivitty.class);
-                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                        startActivity(intent);
-                        break;
-                    }
-                }
-                sign_in_progress.setVisibility(View.GONE);
-                if(cross_check==1)
-                {
-                    if(Common.user_type.equals("user"))
-                    {
-                        Toast.makeText(LoginActivity.this, "First Log out your client account ", Toast.LENGTH_SHORT).show();
-                    }
-                    else if(Common.user_type.equals("client"))
-                    {
-                        Toast.makeText(LoginActivity.this, "First Log out your user account ", Toast.LENGTH_SHORT).show();
-                    }
-                }
-            }
-            @Override
-            public void onCancelled(DatabaseError error) {
-                // Failed to read value
-            }
-        });
+                });
     }
 
     public void sign_up_activity(View view)

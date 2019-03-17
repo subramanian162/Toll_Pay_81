@@ -28,7 +28,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.subu.stjosephs.tollpay.Objects.UserVehicle;
+import com.subu.stjosephs.tollpay.Objects.User_R_Vehicles;
 import com.subu.stjosephs.tollpay.Objects.Vehicles_Entry;
 import com.subu.stjosephs.tollpay.adapters.CustomClientAdapter;
 import com.subu.stjosephs.tollpay.adapters.CustomUserAdapter;
@@ -38,15 +38,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class HomeActivitty extends AppCompatActivity
+public class HomeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     List<Vehicles_Entry> register_vehicles_list;
     Vehicles_Entry matched_vehicle_entry;
     FirebaseAuth mAuth;
     ListView home_list;
-    UserVehicle matched_user_Vehicle;
-    List<UserVehicle> user_Vehicle_List;
+    User_R_Vehicles matched_user_Vehicle;
+    List<User_R_Vehicles> user_Vehicle_List;
     List<String> client_list;
     String last_crossed_vehicle_from_toll;
 
@@ -91,7 +91,7 @@ public class HomeActivitty extends AppCompatActivity
         if(mAuth.getCurrentUser()==null)
         {
             finish();
-            startActivity(new Intent(HomeActivitty.this,LoginActivity.class));
+            startActivity(new Intent(HomeActivity.this,LoginActivity.class));
         }
 
         if(Common.user_type.equals("user"))
@@ -114,11 +114,11 @@ public class HomeActivitty extends AppCompatActivity
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     for(DataSnapshot snapshot : dataSnapshot.getChildren())
                     {
-                        UserVehicle userVehicle = snapshot.getValue(UserVehicle.class);
+                        User_R_Vehicles userVehicle = snapshot.getValue(User_R_Vehicles.class);
                         user_Vehicle_List.add(userVehicle);
                     }
                     home_list = (ListView)findViewById(R.id.home_list_view);
-                    CustomUserAdapter customUserAdapter = new CustomUserAdapter(HomeActivitty.this,user_Vehicle_List);
+                    CustomUserAdapter customUserAdapter = new CustomUserAdapter(HomeActivity.this,user_Vehicle_List);
                     home_list.setAdapter(customUserAdapter);
                 }
                 @Override
@@ -194,7 +194,7 @@ public class HomeActivitty extends AppCompatActivity
                         .addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                matched_user_Vehicle = dataSnapshot.getValue(UserVehicle.class);
+                                matched_user_Vehicle = dataSnapshot.getValue(User_R_Vehicles.class);
                             }
                             @Override
                             public void onCancelled(@NonNull DatabaseError databaseError) {

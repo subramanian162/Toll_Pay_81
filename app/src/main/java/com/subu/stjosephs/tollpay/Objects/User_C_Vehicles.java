@@ -1,18 +1,16 @@
 package com.subu.stjosephs.tollpay.Objects;
 
-public class CrossedVehicle {
-
+public class User_C_Vehicles {
     private String date;
     private String time;
     private String vehicle_number;
     private String Amount;
     private String Status;
-
-    public CrossedVehicle(){
+    public User_C_Vehicles(){
 
     }
 
-    public CrossedVehicle(String date, String time, String vehicle_number, String amount, String status) {
+    public User_C_Vehicles(String date, String time, String vehicle_number, String amount, String status) {
         this.date = date;
         this.time = time;
         this.vehicle_number = vehicle_number;
